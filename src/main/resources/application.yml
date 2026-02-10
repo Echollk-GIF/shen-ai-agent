@@ -1,6 +1,8 @@
 spring:
   application:
     name: shen-ai-agent
+  profiles:
+    active: local
 # http://localhost:8777/api/doc.html#/home
 server:
   port: 8777
