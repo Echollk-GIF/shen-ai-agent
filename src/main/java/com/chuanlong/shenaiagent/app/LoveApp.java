@@ -1,6 +1,7 @@
 package com.chuanlong.shenaiagent.app;
 
-import lombok.extern.slf4j.Slf4j;
+import com.chuanlong.shenaiagent.advisor.MyLoggerAdvisor;
+import com.chuanlong.shenaiagent.advisor.ReReadingAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -11,7 +12,6 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j
 public class LoveApp {
 
     private final ChatClient chatClient;
@@ -32,6 +32,9 @@ public class LoveApp {
         chatClient = ChatClient.builder(dashscopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
                 .defaultAdvisors(
+                        new MyLoggerAdvisor(),
+                        // 自定义推理增强 Advisor，可按需开启
+//                        new ReReadingAdvisor(),
                         MessageChatMemoryAdvisor.builder(chatMemory).build()
                 )
                 .build();
@@ -44,9 +47,7 @@ public class LoveApp {
                 .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
                 .call()
                 .chatResponse();
-        String content = response.getResult().getOutput().getText();
-        log.info("content: {}", content);
-        return content;
+        return response.getResult().getOutput().getText();
     }
 }
 
